@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1C2742">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mesa 2026">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Check-list do Presidente de Mesa – Eleições 2026 (v10)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,600..800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E4E9F2; --panel:#F7F9FC; --ink:#1C2742; --muted:#5A6684; --line:#C9D1E0;
+  --confirma:#2B9A57; --confirma-ink:#fff; --corrige:#E0592A; --branco:#FFFFFF;
+  --amarelo:#ECB21A; --azul:#2F7FB0; --done-bg:#E5F3EA;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121826; --panel:#1B2335; --ink:#E7ECF6; --muted:#9AA6C2; --line:#2E3A54;
+    --confirma:#33B067; --corrige:#F06A3C; --branco:#2A3349; --done-bg:#183324;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121826; --panel:#1B2335; --ink:#E7ECF6; --muted:#9AA6C2; --line:#2E3A54;
+  --confirma:#33B067; --corrige:#F06A3C; --branco:#2A3349; --done-bg:#183324;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:17px;line-height:1.45;-webkit-text-size-adjust:100%}
+h1,h2,h3,.tab,.btn{font-family:"Archivo","Arial Narrow",Arial,sans-serif;font-stretch:82%}
+.wrap{max-width:720px;margin:0 auto;padding:0 14px 48px}
+
+/* faixa tricolor, referência aos materiais da Justiça Eleitoral */
+.stripe{height:6px;background:linear-gradient(90deg,var(--amarelo) 0 33.3%,var(--azul) 33.3% 66.6%,var(--confirma) 66.6%)}
+
+header{padding:18px 0 8px}
+header h1{font-size:30px;line-height:1.05;margin:0;font-weight:800;letter-spacing:-.01em}
+header p{margin:6px 0 0;color:var(--muted);font-size:15px}
+.idbox{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
+.idbox label{min-width:0;display:flex;flex-direction:column;font-size:13px;color:var(--muted);gap:3px}
+.idbox input{font:inherit;font-size:16px;padding:8px 10px;border:1px solid var(--line);
+  border-radius:6px;background:var(--panel);color:var(--ink);min-width:0;width:100%}
+.idbox .wide{grid-column:1/-1}
+
+/* abas: teclas da urna */
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);
+  padding:10px 0;margin:0 -14px;padding-left:14px;padding-right:14px;
+  border-bottom:1px solid var(--line)}
+.tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;border:0;cursor:pointer;font-size:16px;font-weight:700;
+  padding:9px 13px 8px;border-radius:7px;background:var(--panel);color:var(--ink);
+  box-shadow:inset 0 -3px 0 var(--line);display:flex;flex-direction:column;align-items:flex-start;gap:1px}
+.tab small{font-family:"Atkinson Hyperlegible",sans-serif;font-weight:400;font-size:12px;color:var(--muted);font-stretch:100%}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);box-shadow:inset 0 -3px 0 var(--amarelo)}
+.tab[aria-selected="true"] small{color:var(--bg);opacity:.75}
+.tab:focus-visible,.key:focus-visible,.btn:focus-visible,summary:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+
+section[hidden]{display:none}
+.phase-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:20px 0 6px}
+.phase-head h2{font-size:24px;margin:0;font-weight:800;line-height:1.1}
+.phase-head .count{font-size:14px;color:var(--muted);white-space:nowrap}
+.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-bottom:8px}
+.bar i{display:block;height:100%;width:0;background:var(--confirma);transition:width .25s}
+.intro{color:var(--muted);font-size:15px;margin:6px 0 10px}
+
+h3{font-size:18px;margin:22px 0 8px;font-weight:700;color:var(--muted)}
+
+/* itens */
+ul.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.item{display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+  border-radius:8px;padding:10px 12px;transition:background .15s}
+.item.done{background:var(--done-bg);border-color:transparent}
+.item.done .txt{color:var(--muted)}
+.item.alert{border-left:5px solid var(--corrige)}
+.key{flex:0 0 auto;width:44px;height:36px;border-radius:6px;border:0;cursor:pointer;
+  background:var(--branco);box-shadow:inset 0 0 0 2px var(--line),0 2px 0 var(--line);
+  display:grid;place-items:center;margin-top:1px}
+.key svg{width:20px;height:20px;opacity:0}
+.item.done .key{background:var(--confirma);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.item.done .key svg{opacity:1}
+@media (prefers-reduced-motion:no-preference){ .key:active{transform:translateY(2px)} }
+.txt{flex:1;min-width:0}
+.txt b{font-weight:700}
+.txt .note{display:block;font-size:14px;color:var(--muted);margin-top:2px}
+.txt .stamp{display:block;font-size:13px;font-weight:700;color:var(--confirma);margin-top:3px}
+
+.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.btn{border:0;cursor:pointer;font-size:16px;font-weight:700;padding:10px 14px;border-radius:7px}
+.btn.corrige{background:var(--corrige);color:#fff}
+.btn.confirma{background:var(--confirma);color:#fff}
+.btn.ghost{background:transparent;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line)}
+
+/* anotações para a Ata */
+.log-form{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.chip{border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:14px;
+  padding:6px 10px;border-radius:999px;cursor:pointer}
+.chip:active{background:var(--line)}
+.log-form textarea{width:100%;font:inherit;font-size:16px;padding:10px;border-radius:6px;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);min-height:74px;resize:vertical}
+.log{list-style:none;padding:0;margin:12px 0 0;display:flex;flex-direction:column;gap:6px}
+.log li{display:flex;gap:10px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 12px}
+.log .hr{font-family:"Archivo",sans-serif;font-stretch:82%;font-weight:800;font-size:17px;min-width:48px}
+.log .t{flex:1;min-width:0;overflow-wrap:anywhere}
+.log .del{border:0;background:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1;padding:0 4px}
+.empty{color:var(--muted);font-size:15px;margin:10px 0 0}
+
+/* consulta rápida */
+details{background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-bottom:6px}
+summary{cursor:pointer;padding:12px 14px;font-weight:700;list-style:none;display:flex;justify-content:space-between;gap:10px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:"Archivo",sans-serif;font-size:22px;line-height:1;color:var(--muted)}
+details[open] summary::after{content:"–"}
+.dbody{padding:0 14px 12px;font-size:16px}
+.dbody ol,.dbody ul{padding-left:20px;margin:6px 0}
+.dbody li{margin:4px 0}
+.dbody p{margin:6px 0}
+.warn{border-left:4px solid var(--corrige);padding:6px 10px;background:var(--bg);border-radius:0 6px 6px 0;margin:8px 0}
+.tbl{overflow-x:auto}
+.tbl table{border-collapse:collapse;width:100%;font-size:15px}
+.tbl td{border-top:1px solid var(--line);padding:6px 6px;vertical-align:top}
+.tbl td:first-child{font-weight:700;white-space:nowrap}
+
+li.code{display:grid;grid-template-columns:auto 1fr;column-gap:12px;row-gap:3px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+li.code.star{border-left:5px solid var(--amarelo)}
+li.code .cn{grid-row:span 2;font-family:"Archivo","Arial Narrow",sans-serif;font-stretch:82%;font-weight:800;font-size:18px;min-width:58px;line-height:1.2}
+li.code .cd{font-size:16px}
+li.code .ex{font-size:14px;color:var(--muted);font-style:italic}
+.quick{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.qbtn{font:inherit;font-size:15px;font-weight:700;text-align:left;cursor:pointer;min-height:56px;padding:10px 12px;border-radius:8px;
+  border:0;background:var(--branco);color:var(--ink);box-shadow:inset 0 0 0 2px var(--line),0 3px 0 var(--line)}
+.qbtn:active{transform:translateY(2px);box-shadow:inset 0 0 0 2px var(--confirma),0 1px 0 var(--line)}
+.qbtn:focus-visible{outline:3px solid var(--azul);outline-offset:2px}
+.toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;
+  background:var(--confirma);color:#fff;font-weight:700;padding:10px 16px;border-radius:8px;max-width:90vw;z-index:20;pointer-events:none;transition:opacity .2s,transform .2s}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.log .det{display:block;font-size:14px;color:var(--ink);margin-top:2px}
+.log .todo{display:block;font-size:14px;color:var(--corrige);font-weight:700;margin-top:2px}
+.log .edit{display:flex;gap:6px;margin-top:6px}
+.log .edit[hidden]{display:none}
+.log .edit input{flex:1;min-width:0;font:inherit;font-size:16px;padding:7px 9px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.btn.sm{padding:7px 10px;font-size:15px}
+.log .acts{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.mini{border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:13px;padding:4px 8px;border-radius:6px;cursor:pointer}
+.block{margin:30px 0 4px;padding:14px 16px 12px;border-radius:10px;background:var(--ink);color:var(--bg);border-left:8px solid var(--amarelo)}
+.block.complete{border-left-color:var(--confirma)}
+.block .bt{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.block .bh{font-family:"Archivo","Arial Narrow",sans-serif;font-stretch:82%;font-weight:800;font-size:34px;line-height:1;margin:0;color:var(--bg)}
+.block .bc{font-family:"Archivo",sans-serif;font-stretch:82%;font-weight:800;font-size:20px;opacity:.85}
+.block .bs{margin:6px 0 0;font-size:15px;opacity:.8}
+footer{margin-top:28px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="stripe"></div>
+<div class="wrap">
+  <header>
+    <h1>Check-list do Presidente de Mesa</h1>
+    <p>Eleições 2026, 1º turno. Toque na tecla ao lado de cada item para marcar; o horário fica registrado para ajudar na Ata.</p>
+    <div class="idbox">
+      <label>Zona<input id="f-zona" inputmode="numeric" autocomplete="off"></label>
+      <label>Seção<input id="f-secao" inputmode="numeric" autocomplete="off"></label>
+      <label>Hora de chegada<input id="f-chegada" placeholder="ex.: 7h" autocomplete="off"></label>
+      <label class="wide">Meu título eleitoral (para registrar presença, suspender e encerrar)<input id="f-titulo" inputmode="numeric" autocomplete="off"></label>
+      <label class="wide">Telefone do Cartório Eleitoral<input id="f-cartorio" inputmode="tel" autocomplete="off"></label>
+    </div>
+  </header>
+
+  <nav>
+    <div class="tabs" role="tablist" id="tabs"></div>
+  </nav>
+
+  <main id="main"></main>
+
+  <footer>Baseado no Manual do Mesário 2026, Guia Rápido, 10 Dicas de Ouro e Procedimentos Excepcionais do TSE. Em caso de divergência, vale a orientação do Cartório Eleitoral. As marcações ficam salvas apenas neste aparelho.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var CHECK_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5L19.5 7"/></svg>';
+
+/* ---------- conteúdo ---------- */
+var PHASES=[
+{ id:"vespera", tab:"Véspera", sub:"sáb 03/10, 8h", title:"Recepção da urna",
+  intro:"Conferir tudo na frente de quem entregar. Qualquer problema se aponta ali, antes de assinar o recebimento.",
+  groups:[
+  { h:"Ao chegar", items:[
+    ["v1","Levar <b>documento com foto</b> e o número do seu título eleitoral."],
+    ["v2","Conferir a <b>identificação da urna</b>: município, zona e seção corretos."],
+    ["v3","Conferir se os <b>lacres da urna</b> estão inteiros, bem colados e assinados.",null,1],
+    ["v4","Conferir se os <b>Cadernos de Votação</b> são da sua seção.","Inclui o caderno da seção agregada e o de Transferidos Temporariamente, se houver."]
+  ]},
+  { h:"Materiais da seção", items:[
+    ["m1","Formulário <b>Ata da Mesa Receptora</b>"],
+    ["m2","Formulários <b>Requerimento de Justificativa Eleitoral (RJE)</b>"],
+    ["m3","Formulários para Identificação de Eleitora e Eleitor com Deficiência"],
+    ["m4","Manual do Mesário e Guia Rápido"],
+    ["m5","Canetas esferográficas e almofada para carimbo"],
+    ["m6","Fones de ouvido descartáveis"],
+    ["m7","Senhas para quem estiver na fila às 17h"],
+    ["m8","<b>Lacre de urna para reposição</b> (cor azul)","Será usado no encerramento, na tampa da Mídia de Resultado."],
+    ["m9","Embalagem/envelope para a <b>Mídia de Resultado</b>"],
+    ["m10","Envelope para RJE e formulários de deficiência preenchidos"],
+    ["m11","Envelopes para remessa de documentos à Junta Eleitoral"],
+    ["m12","Lista de candidatas e candidatos (se fornecida)"]
+  ]},
+  { h:"Montagem da sala", items:[
+    ["s1","Cabina posicionada com a <b>tela visível só para quem vota</b>.","Nunca de frente para portas, janelas, espelhos ou corredores."],
+    ["s2","<b>Traseira da urna</b> visível para a Mesa."],
+    ["s3","Terminal do Mesário na mesa do Presidente."],
+    ["s4","Mesa de apoio para celulares e pertences, visível para a Mesa e para o eleitor."],
+    ["s5","Cabos presos ao chão e circulação livre, pensando em idosos e cadeirantes."],
+    ["s6","Câmeras da sala com as lentes bloqueadas (se houver)."],
+    ["s7","Tomada da urna testada e com energia."],
+    ["s8","Lista de candidatos afixada em local visível (se fornecida)."],
+    ["s9","<b>Não ligar a urna</b> sem orientação expressa do Cartório.","A Zerésima é emitida só amanhã, com a fila presente.",1]
+  ]},
+  { h:"Perguntar a quem entregar a urna", items:[
+    ["p1","A urna fica na sala ou volta para outro local? Quem guarda a chave?"],
+    ["p2","Qual o horário de chegada amanhã?","Anote no campo do topo."],
+    ["p3","Telefone do Cartório para ocorrências.","Anote no campo do topo."],
+    ["p4","Como, onde e a quem entregar os materiais no encerramento?"]
+  ]}
+  ]},
+
+{ id:"abertura", tab:"Abertura", sub:"dom 04/10, até 8h", title:"Instalação e Zerésima",
+  intro:"Meta: seção instalada, Zerésima emitida e presenças registradas antes das 8h. Se o Presidente não chegar até 7h30, o 1º mesário assume.",
+  groups:[
+  { block:"Antes das 8h",bsub:"Preparação e Zerésima, com a seção ainda fechada", h:"Conferência da urna", items:[
+    ["a1","Sala, cabina e <b>lacres da urna</b> como foram deixados na véspera.",null,1],
+    ["a2","Ligar o cabo na tomada e a urna no botão Liga/Desliga."],
+    ["a3","Na tela: município, zona, seção, seção agregada, <b>data e hora</b> corretos."],
+    ["a4","Urna na <b>energia elétrica</b>: luz de bateria interna apagada.","Luz de segurança: amarela piscando ao iniciar, depois verde. Na UE2020/2022 fica na traseira do Terminal do Eleitor."],
+    ["a5","<b>Teste do teclado</b> feito e resultado anotado na Ata."]
+  ]},
+  { block:"Antes das 8h",bsub:"Preparação e Zerésima, com a seção ainda fechada", h:"Zerésima", items:[
+    ["z1","Convidar as <b>2 primeiras pessoas da fila</b> para acompanhar.","Anotar na Ata se aceitaram ou recusaram (item 2.1)."],
+    ["z2","Emitir a <b>Zerésima e o Resumo da Zerésima</b> seguindo a tela do Terminal do Eleitor.","Ilegível ou não impressa: desligar e religar; persistindo, ligar para o Cartório e anotar (5.4)."],
+    ["z3","Assinaturas do Presidente, mesários e fiscais presentes.","Sem fiscais no início: anotar na Ata (4.1), sem atrasar os trabalhos."],
+    ["z4","<b>Resumo da Zerésima</b> afixado na entrada da seção."],
+    ["z5","Zerésima assinada guardada conforme o Cartório orientou."]
+  ]},
+  { block:"Antes das 8h",bsub:"Preparação e Zerésima, com a seção ainda fechada", h:"Presença dos mesários e Ata", items:[
+    ["r1","Registrar os mesários na urna: título de cada um, CONFIRMA, CONFIRMA de novo e, ao final, CORRIGE.","A urna pede logo após a Zerésima. Será pedido de novo no encerramento. Atrasados: CORRIGE, opção 3, durante o dia."],
+    ["r2","Cabeçalho da Ata preenchido: UF, município, zona, seção, data e horário de início."],
+    ["r3","Todos os mesários assinam a Ata, mesmo tendo registrado na urna."],
+    ["r4","Fiscais: conferir crachá (nome e sigla) e colher assinatura na Ata.","Máximo de 1 fiscal e 1 delegado por partido, federação ou coligação."]
+  ]},
+  { block:"Antes das 8h",bsub:"Preparação e Zerésima, com a seção ainda fechada", h:"Equipe e sala", items:[
+    ["i1","Funções combinadas: secretário na fila e documentos, um mesário no caderno, outro no comprovante e na Ata."],
+    ["i2","<b>Porta aberta</b> e mantida assim até o fim dos trabalhos."],
+    ["i3","Celulares da mesa guardados: sem redes sociais nem música durante o trabalho."]
+  ]},
+  { block:"A partir das 8h",bsub:"Abertura da votação", h:"Início da votação", items:[
+    ["i4","<b>8h: votação iniciada.</b> Mesários e fiscais votam depois dos eleitores presentes na abertura."],
+    ["i5","Pedir à primeira pessoa que votar para permanecer até a segunda concluir o voto."]
+  ]}
+  ]},
+
+{ id:"durante", tab:"Durante", sub:"8h às 17h", title:"Registro rápido para a Ata", log:true,
+  intro:"Um toque grava o horário. Os detalhes (nome, título) você completa depois, com calma, tocando em \u201cCompletar\u201d." },
+
+{ id:"ata", tab:"Códigos da Ata", sub:"o que anotar", title:"Códigos da Ata", ata:true,
+  intro:"Toda ocorrência vai no verso da Ata com hora, código, nome completo e documento das pessoas envolvidas. Os marcados com \u2605 aparecem em quase toda seção." },
+
+{ id:"encerramento", tab:"Encerramento", sub:"a partir das 17h", title:"Encerramento e entrega",
+  intro:"Seguir a ordem à risca. A votação só pode ser encerrada a partir das 17h (horário de Brasília).",
+  groups:[
+  { block:"Após as 17h",bsub:"Encerramento, boletins e entrega", h:"Fila e preparação (às 17h)", items:[
+    ["e1","17h com fila: secretário distribui <b>senhas</b>, começando pela última pessoa até a primeira."],
+    ["e2","Porta da seção continua aberta."],
+    ["e3","Convidar as <b>2 últimas pessoas a votar</b> para acompanhar.","Anotar aceite ou recusa na Ata (2.11)."]
+  ]},
+  { block:"Após as 17h",bsub:"Encerramento, boletins e entrega", h:"Na urna (após o último eleitor votar)", items:[
+    ["u1","Terminal do Mesário: <b>CORRIGE</b>, outras opções, <b>2 – Encerrar votação</b>."],
+    ["u2","Digitar o <b>número do seu título</b> e CONFIRMA. Na tela \u201cEncerramento da votação\u201d, CONFIRMA de novo."],
+    ["u3","\u201cRegistrar mesário?\u201d: registrar <b>de novo</b> os mesários presentes, depois CORRIGE e CONFIRMA.","Segundo registro do dia, obrigatório no encerramento."],
+    ["u4","Conferir se a 1ª via do <b>Boletim de Urna</b> saiu completa e legível, e CONFIRMA.","BU ilegível: diante dos fiscais, desligar e religar. Persistindo: não retirar a Mídia, guardar a urna e ligar para o Cartório."],
+    ["u5","Só retirar a Mídia após a mensagem <b>\u201cRetire a Mídia de Resultado\u201d</b>.",null,1],
+    ["u6","Retirar o lacre e a tampa, retirar a MR com cuidado e recolocar a tampa."],
+    ["u7","Colar na tampa o <b>lacre de reposição</b> assinado pelo Presidente."],
+    ["u8","CONFIRMA no Terminal do Eleitor e aguardar <b>FIM DOS TRABALHOS</b>."],
+    ["u9","Desligar a urna na chave e guardar na caixa para transporte."]
+  ]},
+  { block:"Após as 17h",bsub:"Encerramento, boletins e entrega", h:"Boletins (após FIM DOS TRABALHOS)", items:[
+    ["b1","Todas as vias do <b>BU e do BUJ</b> assinadas pela Mesa e pelos fiscais presentes."],
+    ["b2","<b>BIM e BEHB</b> assinados pelo Presidente e demais mesários."],
+    ["b3","BU: <b>2 vias</b> no envelope da Junta Eleitoral."],
+    ["b4","BU: <b>1 via afixada</b> na porta da seção."],
+    ["b5","BU: <b>1 via com você</b>, para conferir depois no site do TSE."],
+    ["b6","BU: vias para as 2 últimas pessoas e para fiscais, MP ou imprensa que pedirem."]
+  ]},
+  { block:"Após as 17h",bsub:"Encerramento, boletins e entrega", h:"Documentos", items:[
+    ["d1","Caderno de Votação: anotar <b>\u201cNC\u201d</b> no lugar da assinatura de quem faltou."],
+    ["d2","Comprovantes destacados por engano guardados com o material."],
+    ["d3","<b>Ata finalizada</b>, com todas as ocorrências, horário de término e sua assinatura."]
+  ]},
+  { block:"Após as 17h",bsub:"Encerramento, boletins e entrega", h:"Envelope da Junta Eleitoral", items:[
+    ["j1","Mídia de Resultado (MR)"],
+    ["j2","Cadernos de Votação"],
+    ["j3","Zerésima assinada"],
+    ["j4","Ata da Mesa Receptora preenchida e assinada"],
+    ["j5","2 vias do BU, 1 BUJ, 1 BIM e 1 BEHB"],
+    ["j6","RJE preenchidos e os não utilizados"],
+    ["j7","Formulários de deficiência preenchidos e os não utilizados"],
+    ["j8","Demais materiais pedidos pelo Cartório"]
+  ]},
+  { block:"Após as 17h",bsub:"Encerramento, boletins e entrega", h:"Para fechar o dia", items:[
+    ["f1","Cartazes retirados com cuidado e sobras de material juntadas."],
+    ["f2","Sala organizada (o espaço pode ser usado no dia seguinte)."],
+    ["f3","Materiais entregues conforme o Cartório orientou, com recibo quando houver."],
+    ["f4","Conferir o resultado da seção no site do TSE ou no app Boletim na Mão."]
+  ]}
+  ]},
+
+{ id:"teclas", tab:"Teclas e RJE", sub:"menus e justificativa", title:"Teclas e justificativa", ref:true, refKey:"KEYS",
+  intro:"Regra geral: CORRIGE abre o menu ou cancela; o seu título autoriza as ações do Presidente; o ano de nascimento entra quando a biometria não resolve." },
+
+{ id:"consulta", tab:"Consulta rápida", sub:"situações do dia", title:"Consulta rápida", ref:true,
+  intro:"Toque em uma situação para abrir o passo a passo." }
+];
+
+var QUICK=[
+ {g:"Abertura", items:[
+  ["Teste do teclado OK","Teste do teclado realizado com sucesso",""],
+  ["2.1 Zerésima emitida","(2.1) Zerésima emitida","quem da fila acompanhou ou se não havia eleitores"],
+  ["4.1 Sem fiscais","(4.1) Nenhum fiscal presente na emissão da Zerésima",""],
+  ["Votação iniciada","Votação iniciada",""],
+  ["3.1 Mesário atrasado","(3.1) Mesário chegou atrasado","nome e título"]
+ ]},
+ {g:"Eleitores", items:[
+  ["2.9 Biometria pelo ano","(2.9) Biometria não reconhecida, habilitado pelo ano de nascimento","nome e título (constam também no BEHB)"],
+  ["2.2 Voto suspenso","(2.2) Voto suspenso","nome, título e se votou em algum cargo"],
+  ["2.6 Acompanhante","(2.6) Eleitor com deficiência votou com acompanhante","nome do eleitor e nome e documento do acompanhante"],
+  ["2.7 Instrumento auxiliar","(2.7) Eleitor usou instrumento auxiliar para votar","nome e título"],
+  ["2.5 Dúvida de identidade","(2.5) Dúvida sobre identidade do eleitor","nome e providência"],
+  ["2.10 Recusou entregar celular","(2.10) Eleitor recusou entregar aparelho eletrônico","nome e providência"],
+  ["2.8 Assinou no lugar errado","(2.8) Assinatura em local indevido no Caderno","nome"],
+  ["RJE com auxílio","RJE de eleitor não alfabetizado preenchido com auxílio da mesa, assinado com digital",""]
+ ]},
+ {g:"Seção e urna", items:[
+  ["Inspeção cabina/urna","Inspeção da cabina e da urna realizada, sem alterações",""],
+  ["Fiscal chegou","Fiscal compareceu e assinou a Ata","nome e partido"],
+  ["4.2 Impugnação de fiscal","(4.2) Protesto ou impugnação de fiscal","fiscal, partido e motivo"],
+  ["4.3 Observador","(4.3) Observador eleitoral presente","nome e instituição"],
+  ["3.2 Mesário saiu","(3.2) Saída antecipada de mesário","nome e título"],
+  ["Energia caiu","Falta de energia: início (votação continuou na bateria)",""],
+  ["Energia voltou","Falta de energia: fim",""],
+  ["5.2 Votação interrompida","(5.2) Votação interrompida","motivo e horário de retorno"],
+  ["Ligação ao Cartório","Contato com o Cartório Eleitoral","motivo e orientação recebida"]
+ ]},
+ {g:"Encerramento", items:[
+  ["Senhas distribuídas","Senhas distribuídas aos eleitores na fila às 17h",""],
+  ["2.11 Encerramento acompanhado","(2.11) Encerramento acompanhado pelas 2 últimas pessoas","nomes, ou recusa"],
+  ["Fim dos trabalhos","Fim dos trabalhos",""]
+ ]}
+];
+
+var REF=[
+["Fluxo de votação",
+"<ol><li>Secretário confere documento com foto e se a pessoa está na seção certa; pergunta o CPF.</li><li>Presidente digita o CPF (ou título) no Terminal do Mesário e lê em voz alta o nome e o número sequencial.</li><li>Mesário localiza no Caderno pelo número sequencial, confirma em voz alta e marca o comprovante.</li><li>Eleitor coloca o dedo no sensor até o aviso sonoro (até 4 tentativas, alternando polegar e indicador).</li><li>Biometria reconhecida: <b>não assina</b> o Caderno. Sem biometria ou habilitado pelo ano: <b>assina</b>.</li><li>Celular desligado e pertences na mesa de apoio.</li><li>Vota na cabina.</li><li>Recolhe os pertences e recebe o comprovante.</li></ol><p>Não reter o documento enquanto a pessoa vota. Chamar o próximo quando o anterior estiver no último cargo (Governador).</p>"],
+["Biometria não reconhecida",
+"<ol><li>Antes de nova tentativa, conferir se o número foi digitado certo.</li><li>Após 4 tentativas: perguntar o <b>ano de nascimento</b> e digitar.</li><li>Se bater, o Presidente põe o próprio dedo no sensor para atestar.</li><li>Eleitor assina o Caderno. Anotar na Ata (2.9).</li></ol><p>Se a urna não habilitar nem pelo ano: a pessoa não vota agora e deve procurar o Cartório; pode voltar até o encerramento.</p><p>Dedo seco: uma leve fricção na pele ajuda. Limpar o sensor só com pano limpo e seco.</p>"],
+["Suspensão do voto",
+"<ol><li>Aparece a pergunta se o eleitor está votando. Se ele não quiser continuar, apertar <b>CORRIGE</b>.</li><li>Digitar o <b>número do seu título</b> e confirmar a suspensão.</li><li>Não votou em nada: pode voltar até o encerramento. <b>Não entregar</b> o comprovante.</li><li>Votou em pelo menos um cargo: não pode voltar. <b>Entregar</b> o comprovante.</li></ol><p>Anotar na Ata: motivo, nome e título (2.2).</p>"],
+["Justificativa eleitoral (RJE)",
+"<ol><li>Conferir o preenchimento do RJE e o documento com foto.</li><li>Digitar o <b>número do título</b> e CONFIRMA (a urna avisa que não pertence à seção); CONFIRMA de novo.</li><li>Digitar o ano de nascimento e CONFIRMA.</li><li>Preencher UF, município, zona e seção no RJE, assinar e entregar o canhoto.</li></ol><div class='warn'>Com CPF não funciona. Só com o número do título.</div><p>Lembre que a pessoa pode justificar pelo e-Título, sem fila.</p>"],
+["Documentos aceitos",
+"<p>Documento oficial com foto, em papel ou digital, mesmo vencido: e-Título <b>com foto</b>, RG, identidade social, passaporte, carteira de categoria profissional, Certificado de Reservista, CNH, Carteira de Trabalho <b>física</b>.</p><div class='warn'>Não valem: documento sem foto, certidão de nascimento ou casamento, Carteira de Trabalho digital, e-Título sem foto.</div><p>Nome não aparece no caderno nem na urna: consultar a Listagem de Impedidos de Votar, no final do Caderno.</p>"],
+["Fila: preferências",
+"<p><b>Acima de 80 anos</b> têm prioridade sobre todos, independentemente da chegada.</p><p>Por ordem de chegada entre si: candidatos, juízes, servidores e promotores eleitorais, agentes de segurança em serviço, pessoas com 60+, com deficiência, autismo, mobilidade reduzida, criança de colo, enfermas, obesas, gestantes, lactantes (e acompanhantes) e doadores de sangue com comprovante de até 120 dias.</p>"],
+["Pessoa com deficiência ou visual",
+"<ul><li>Pode ter acompanhante de sua escolha, inclusive na cabina. O acompanhante não pode estar a serviço da Justiça Eleitoral, partido, federação ou coligação. Anotar nome e documento na Ata (2.6).</li><li>Oferecer o Formulário de Identificação de Eleitor com Deficiência, se a condição não estiver no cadastro.</li><li>Áudio: <b>antes de habilitar</b>, CORRIGE e opção 1 – Ativar áudio. Fone fornecido pela Justiça Eleitoral, conectado pelo mesário.</li><li>Volume: tecla 3 aumenta, 9 diminui. Velocidade: 6 mais rápida, 4 mais lenta. Tecla 5 tem marca em relevo.</li><li>Instrumentos mecânicos são permitidos, desde que não comprometam o sigilo.</li></ul>"],
+["Problemas com a urna",
+"<div class='tbl'><table>"+
+"<tr><td>Falta de energia</td><td>Continuar (há bateria). Ligar para o Cartório e anotar início e fim na Ata.</td></tr>"+
+"<tr><td>Luz vermelha piscando (bateria)</td><td>Conferir cabo e tomada. Persistindo: ligar para o Cartório, continuar e anotar.</td></tr>"+
+"<tr><td>Luz vermelha acesa (bateria crítica)</td><td>Não habilitar mais ninguém, esperar quem está votando terminar, desligar, ligar para o Cartório e anotar.</td></tr>"+
+"<tr><td>Luz de segurança não ficou verde</td><td>Interromper a votação, ligar para o Cartório e anotar.</td></tr>"+
+"<tr><td>Defeito na urna</td><td>Desligar e religar, CONFIRMA no Terminal do Eleitor. Persistindo: Cartório e Ata.</td></tr>"+
+"<tr><td>Eleitor diz que o teclado não funciona ou a foto não aparece</td><td>Informar o cargo em votação, confirmar o número, lembrar que o teste do teclado passou. Insistindo: chamar o técnico do Cartório. Não precisa interromper.</td></tr>"+
+"</table></div><div class='warn'>Se a urna desligar com alguém votando, o voto não é registrado e a pessoa pode votar de novo até as 17h.</div>"],
+["Votação por cédula (último recurso)",
+"<p>Só depois de esgotados os recursos técnicos do Cartório. Uma vez iniciada, <b>não volta</b> para a urna eletrônica.</p><ol><li>Mostrar que a urna de lona está lacrada e romper o lacre RASGUE diante dos fiscais.</li><li>Rubricar e numerar as cédulas em séries de 1 a 9.</li><li>Entregar primeiro a cédula <b>branca</b> (proporcional); depois de depositada, a <b>amarela</b> (majoritária).</li><li>O eleitor mostra a parte rubricada antes de depositar.</li><li>Rasura: inutilizar à vista de todos, entregar outra e anotar (6.3).</li><li>No fim: lacre MESA RECEPTORA na fenda, rubricado por todos.</li></ol>"],
+["Pessoas e conduta",
+"<ul><li><b>Embriaguez</b>: conversar e avaliar. Sem condições, conduzir educadamente para fora e pedir que volte mais tarde.</li><li><b>Fiscal interferindo</b>: pedir que se retire; persistindo, chamar o Juiz Eleitoral.</li><li><b>Imprensa</b>: só com autorização do Juiz; definir área própria; entrevistas proibidas dentro da seção.</li><li><b>Dúvida de identidade</b>: perguntar dados pessoais; persistindo, chamar o Juiz e seguir a votação. Impugnação só antes de votar.</li><li><b>Colinha</b>: permitida se impressa. Celular na cabina, nunca.</li><li><b>Política</b>: a mesa não opina. Eleitor pode manifestar preferência em silêncio (broche, adesivo, camiseta).</li><li><b>Ausência de mesário</b>: ligar para o Cartório e anotar na Ata.</li></ul>"]
+];
+
+var KEYS=[
+["Justificativa (RJE) passo a passo",
+"<p>Para quem está <b>fora do município onde vota</b>, das 8h às 17h.</p><ol><li>Conferir o RJE preenchido (nome e título) e o <b>documento oficial com foto</b>.</li><li>Digitar o <b>número do título</b> e <b>CONFIRMA</b>.</li><li>Aviso de que a pessoa não pertence à seção: é normal. <b>CONFIRMA</b> de novo.</li><li>Digitar o <b>ano de nascimento</b> e <b>CONFIRMA</b>.</li><li>No RJE: UF, município, zona e seção; <b>assinar</b> e entregar o <b>canhoto</b>.</li><li>RJE no envelope próprio (os não usados também voltam).</li></ol><div class='warn'>Com CPF não funciona. Só com o número do título.</div>",1],
+["Justificativa: pontos de atenção",
+"<ul><li>Sem o título de cor: está no e-Título da pessoa ou no próprio RJE.</li><li>O canhoto não vale como quitação eleitoral.</li><li>Quem tem e-Título pode justificar pelo app, sem fila. Vale o secretário avisar na fila.</li><li>Quem pediu transferência temporária e não foi à seção de destino também justifica.</li><li>Eleitor chegou com RJE pronto: conferir o preenchimento e entregar o comprovante assinado.</li><li>No encerramento sai o <b>BUJ</b>: assinado pela mesa e fiscais, vai para a Junta.</li></ul>"],
+["Justificativa: eleitor não sabe o título",
+"<ol><li>Ver se o número já está escrito no RJE que ele trouxe.</li><li>Pedir que consulte no <b>e-Título</b> (tela inicial do app), fora da cabina.</li><li>Com o e-Título, ele pode <b>justificar direto pelo app</b> (8h às 17h, fora do município, título regular).</li><li>Sem nenhuma opção: não dá para justificar na seção. Orientar que tem <b>até 60 dias</b> após o turno, pelo e-Título ou site do TSE, com comprovante do motivo.</li></ol><div class='warn'>Nunca registrar número chutado ou incompleto. Na dúvida, ligar para o Cartório.</div><p>Na <b>votação</b> o título não é necessário: usar o CPF ou localizar o nome no Caderno pelo documento com foto.</p>"],
+["Justificativa: conferência contra número errado",
+"<ul><li>Digitar o <b>ano de nascimento do documento com foto</b>, não o que a pessoa disser.</li><li>Conferir se o <b>nome</b> e o <b>ano</b> do RJE batem com o documento.</li><li>Número legível e completo? Se houver dúvida: \u201cConferiu esse número no e-Título?\u201d</li><li>O próprio RJE avisa que dados incorretos impedem o processamento. A veracidade do número é responsabilidade de quem assina.</li><li>Dúvida séria sobre identidade: perguntar dados pessoais, chamar o Cartório se persistir e anotar na Ata (2.5).</li></ul>"],
+["Justificativa: quem preenche o RJE",
+"<div class='tbl'><table><tr><td>Eleitor</td><td>Data da eleição, turno, título, ano de nascimento, nome completo igual ao do título e <b>assinatura ou digital</b>.</td></tr><tr><td>Mesa</td><td>UF, município, zona, seção e <b>rubrica</b>, no formulário e no canhoto.</td></tr><tr><td>Secretário</td><td>Confere o preenchimento ainda na fila e entrega RJE em branco a quem chegar sem.</td></tr></table></div><p>A mesa orienta e tira dúvidas, mas não preenche a parte do eleitor (exceto no caso abaixo).</p>"],
+["Justificativa: eleitor não alfabetizado",
+"<ol><li>Um <b>mesário</b> preenche os dados do eleitor copiando do documento com foto, na frente dele.</li><li>Ler em voz alta o que foi escrito para ele confirmar.</li><li>Eleitor coloca a <b>impressão digital</b> no campo de assinatura, usando a almofada.</li><li>Seguir o procedimento normal na urna e entregar o canhoto.</li></ol><p>Sugestão para a Ata: \u201cRJE de eleitor não alfabetizado preenchido com auxílio da mesa, assinado com digital.\u201d Na dúvida, ligar para o Cartório.</p>"],
+["Menu do CORRIGE",
+"<p>Na tela de identificação do eleitor, <b>antes</b> de digitar qualquer dado:</p><div class='tbl'><table><tr><td>1</td><td><b>Ativar áudio</b>. Eleitor com deficiência visual fora do cadastro. Fazer antes de habilitar. Repetir para desativar.</td></tr><tr><td>2</td><td><b>Encerrar votação</b>. Só a partir das 17h. Depois: seu título e CONFIRMA.</td></tr><tr><td>3</td><td><b>Registrar mesários</b>. Mesário que chegou depois da abertura.</td></tr><tr><td>4</td><td><b>Exibir contadores</b>. Habilitados por biometria, pelo ano e sem biometria.</td></tr></table></div>",1],
+["Quando digitar o seu título",
+"<ul><li><b>Suspensão</b>: na tela que pergunta se o eleitor está votando, CORRIGE, seu título e confirmar.<br>Não votou em nada: pode voltar até as 17h, <b>sem</b> comprovante.<br>Votou em algum cargo: não volta, <b>entregar</b> comprovante.<br>Anotar na Ata (2.2) com motivo, nome e título.</li><li><b>Encerramento</b>: CORRIGE, opção 2, seu título e CONFIRMA.</li><li><b>Registro de presença</b>: o seu e o de cada mesário.</li></ul><div class='warn'>O \u201c555555555555\u201d do Guia Rápido é só ilustração. O número a digitar é o título do Presidente.</div>"],
+["Quando digitar o ano de nascimento",
+"<ul><li><b>Eleitor sem biometria</b> (\u201cEleitor sem dados biométricos\u201d): digitar o ano e CONFIRMA. Eleitor <b>assina</b> o Caderno.</li><li><b>Biometria falhou 4 vezes</b>: digitar o ano; se bater, <b>você põe o seu dedo</b> no sensor. Eleitor assina e anota-se na Ata (2.9).</li><li><b>Ano não habilita</b>: a pessoa não vota agora e procura o Cartório; pode voltar até as 17h.</li><li><b>Justificativa</b>: último passo antes de efetivar.</li></ul>"],
+["Habilitar eleitor",
+"<ul><li>Digitar CPF ou título. Zeros à esquerda não precisam.</li><li>Se a urna não reconhecer o tipo, ela pergunta se é CPF ou título.</li><li>Ler em voz alta nome e número sequencial; o mesário confere no Caderno.</li><li>Dados batem com o documento: CONFIRMA e o eleitor põe o dedo após o aviso sonoro.</li></ul>"],
+["Registro de mesários",
+"<ol><li>Digitar o título do mesário e CONFIRMA.</li><li>CONFIRMA de novo para registrar.</li><li>Repetir para cada um; ao terminar, CORRIGE.</li></ol><p>Todos também assinam a Ata, mesmo registrados na urna.</p>"],
+["Teclas do eleitor com áudio",
+"<div class='tbl'><table><tr><td>3</td><td>Aumenta o volume</td></tr><tr><td>9</td><td>Diminui o volume</td></tr><tr><td>6</td><td>Fala mais rápida</td></tr><tr><td>4</td><td>Fala mais lenta</td></tr><tr><td>5</td><td>Tem marca em relevo para orientação</td></tr></table></div><p>Fone fornecido pela Justiça Eleitoral e conectado pelo mesário. Fone próprio não é permitido.</p>"]
+];
+
+var ATA=[
+{ h:"Abertura (antes das 8h)", c:[
+ ["2.1","Participação ou recusa das 2 primeiras pessoas da fila em acompanhar a Zerésima.","7h40 (2.1) Zerésima emitida sem eleitores presentes; portões abrem às 8h.",1],
+ ["4.1","Ausência de fiscais no início da votação (emissão da Zerésima).","7h40 (4.1) Nenhum fiscal presente na emissão da Zerésima.",1],
+ ["5.4","Falha na impressão da Zerésima ou de outro relatório, com motivo e providência.","7h35 (5.4) Zerésima não impressa; urna desligada e religada, impressão normal."],
+ ["5.1","Correção de data ou hora da urna antes do início da votação.","7h30 (5.1) Hora incorreta na urna; corrigida pelo técnico do Cartório."],
+ ["3.1","Atraso de mesário.","7h50 (3.1) Mesário [nome], título [nº], chegou às 7h50."],
+ ["1.1","Atraso no início da votação, com motivo e providência.","8h15 (1.1) Votação iniciada às 8h15 por [motivo]; Cartório comunicado."],
+ ["s/c","Resultado do teste do teclado (sempre anotar).","7h20 Teste do teclado realizado com sucesso.",1],
+ ["s/c","Teste de autenticidade, se a seção for sorteada.","7h00 Seção sorteada para teste de autenticidade, conduzido pelo Cartório."]
+]},
+{ h:"Durante a votação", c:[
+ ["2.9","Eleitor com biometria não reconhecida, habilitado pelo ano de nascimento: nome e título.","9h12 (2.9) [nome], título [nº], habilitado pelo ano de nascimento.",1],
+ ["2.2","Recusa a votar ou incapacidade de concluir o voto (inclui suspensão): motivo, nome e título.","10h05 (2.2) Voto de [nome], título [nº], suspenso; não votou em nenhum cargo.",1],
+ ["2.6","Acompanhante de pessoa com deficiência ou mobilidade reduzida: nome e documento.","10h30 (2.6) [eleitor] acompanhado por [nome], RG [nº]."],
+ ["2.7","Uso de instrumento que auxiliou o eleitor a votar.","11h00 (2.7) [nome], título [nº], usou instrumento mecânico para votar."],
+ ["2.5","Questionamento sobre identidade do eleitor e providências.","11h20 (2.5) Dúvida sobre identidade de [nome]; Juiz Eleitoral acionado."],
+ ["2.3","Eleitor que votou, mas o nome não constava do Caderno.","(2.3) [nome], título [nº], votou; nome ausente do Caderno."],
+ ["2.4","Eleitor da seção que não votou porque os dados não constavam da urna.","(2.4) [nome], título [nº], não votou; dados ausentes da urna."],
+ ["2.8","Assinatura ou digital em local indevido no Caderno.","(2.8) [nome] assinou na linha de [outro nome]."],
+ ["2.10","Recusa em entregar aparelhos eletrônicos antes de votar e providência.","(2.10) [nome] recusou entregar o celular; não votou até entregar."],
+ ["4.2","Protesto ou impugnação apresentados por fiscal e providência.","(4.2) Fiscal [nome] ([partido]) impugnou [eleitor]; registrado."],
+ ["4.3","Observador eleitoral (MOE): nome completo e identificação.","(4.3) Observador [nome], [instituição], presente das 9h às 10h."],
+ ["3.2","Saída antecipada ou abandono de mesário.","(3.2) Mesário [nome], título [nº], saiu às 16h05."],
+ ["3.3","Mesário substituído e quem o substituiu: nomes e títulos.","(3.3) [nome] substituído por [nome], título [nº]."],
+ ["5.2","Interrupção da votação por falha no equipamento ou outro motivo.","(5.2) Votação interrompida das 13h10 às 13h40; luz de segurança não ficou verde."],
+ ["5.3","Troca da urna ou da mídia (contingência).","(5.3) Urna substituída pelo técnico do Cartório às 14h."],
+ ["s/c","Falta de energia: horário exato do início e do fim (a votação continua).","12h00 Falta de energia das 12h00 às 12h25; urna na bateria."],
+ ["s/c","Inspeção da cabina e da urna, quando o terminal lembrar.","13h00 Inspeção da cabina e da urna realizada, sem alterações."],
+ ["s/c","Fiscal que compareceu: colher assinatura no campo da frente da Ata.","Frente da Ata: nome, sigla e assinatura do fiscal."]
+]},
+{ h:"Encerramento", c:[
+ ["2.11","Participação ou recusa das 2 últimas pessoas a votar em acompanhar o encerramento.","17h05 (2.11) [nome] e [nome] acompanharam o encerramento.",1],
+ ["1.1","Atraso no encerramento ou na recepção das justificativas.","(1.1) Encerramento às 17h40 devido à fila com senhas."],
+ ["5.4","Falha na impressão do Boletim de Urna ou de outro relatório.","(5.4) BU ilegível; urna religada diante dos fiscais e reimpresso."],
+ ["s/c","Rodapé: houve rasuras? Nome de quem preencheu, nome do Presidente, data, horário de término e assinaturas.","Horário de término: 17h30.",1]
+]},
+{ h:"Votação por cédula (só se acontecer)", c:[
+ ["6.1","Substituição da urna eletrônica por urna de lona durante a votação.","(6.1) Votação passou para cédulas às 11h por orientação do Cartório."],
+ ["6.2","Votação por cédulas desde o início dos trabalhos.","(6.2) Votação por cédulas desde as 8h."],
+ ["6.3","Inutilização e substituição de cédula por rasura ou dano.","(6.3) Cédula nº [x] inutilizada por rasura e substituída."]
+]}
+];
+
+/* ---------- armazenamento ---------- */
+var KEY="mesa2026:v1";
+var state={checks:{},log:[],fields:{},tab:"vespera"};
+function load(){try{var r=localStorage.getItem(KEY);if(r){var s=JSON.parse(r);state.checks=s.checks||{};state.log=s.log||[];state.fields=s.fields||{};state.tab=s.tab||"vespera";}}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+load();
+
+function hhmm(ts){var d=new Date(ts);return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");}
+function dmy(ts){var d=new Date(ts);return String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0");}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+
+/* ---------- campos do topo ---------- */
+var DEFAULTS={zona:"161",secao:"033",cartorio:"(51) 3294-8161"};
+["zona","secao","chegada","titulo","cartorio"].forEach(function(k){
+  var el=document.getElementById("f-"+k);
+  el.value=state.fields[k]||DEFAULTS[k]||"";
+  el.addEventListener("input",function(){state.fields[k]=el.value;save();});
+});
+
+/* ---------- render ---------- */
+var tabsEl=document.getElementById("tabs"), main=document.getElementById("main");
+
+function phaseItems(p){var a=[];(p.groups||[]).forEach(function(g){g.items.forEach(function(it){a.push(it[0]);});});return a;}
+function phaseDone(p){return phaseItems(p).filter(function(id){return state.checks[id];}).length;}
+
+function renderTabs(){
+  tabsEl.innerHTML="";
+  PHASES.forEach(function(p){
+    var b=document.createElement("button");
+    b.className="tab";b.setAttribute("role","tab");b.type="button";
+    b.setAttribute("aria-selected",state.tab===p.id?"true":"false");
+    var sub=p.sub;
+    if(p.groups){var t=phaseItems(p).length;sub=phaseDone(p)+"/"+t+" feitos";}
+    if(p.log){var pd=state.log.filter(function(e){return e.h&&!e.d;}).length;sub=state.log.length+(state.log.length===1?" registro":" registros")+(pd?", "+pd+" a completar":"");}
+    b.innerHTML=esc(p.tab)+"<small>"+esc(sub)+"</small>";
+    b.addEventListener("click",function(){state.tab=p.id;save();render();window.scrollTo({top:document.querySelector("nav").offsetTop,behavior:"auto"});});
+    tabsEl.appendChild(b);
+  });
+}
+
+function renderChecklist(p){
+  var total=phaseItems(p).length, done=phaseDone(p);
+  var html='<div class="phase-head"><h2>'+esc(p.title)+'</h2><span class="count">'+esc(p.sub)+'</span></div>'+
+    '<div class="bar" aria-hidden="true"><i style="width:'+(total?done/total*100:0)+'%"></i></div>'+
+    '<p class="intro">'+p.intro+'</p>';
+  var lastBlock=null;
+  p.groups.forEach(function(g){
+    if(g.block&&g.block!==lastBlock){
+      lastBlock=g.block;
+      var ids=[];p.groups.forEach(function(x){if(x.block===g.block)x.items.forEach(function(it){ids.push(it[0]);});});
+      var bd=ids.filter(function(id){return state.checks[id];}).length;
+      html+='<div class="block'+(bd===ids.length?' complete':'')+'"><div class="bt"><h2 class="bh">'+esc(g.block)+'</h2><span class="bc">'+bd+'/'+ids.length+'</span></div>'+
+        (g.bsub?'<p class="bs">'+esc(g.bsub)+'</p>':'')+'</div>';
+    }
+    html+='<h3>'+esc(g.h)+'</h3><ul class="list">';
+    g.items.forEach(function(it){
+      var id=it[0],ts=state.checks[id];
+      html+='<li class="item'+(ts?" done":"")+(it[3]?" alert":"")+'" data-id="'+id+'">'+
+        '<button class="key" type="button" aria-pressed="'+(ts?"true":"false")+'" aria-label="Marcar como feito">'+CHECK_SVG+'</button>'+
+        '<div class="txt">'+it[1]+(it[2]?'<span class="note">'+it[2]+'</span>':'')+
+        (ts?'<span class="stamp">Feito às '+hhmm(ts)+' ('+dmy(ts)+')</span>':'')+'</div></li>';
+    });
+    html+='</ul>';
+  });
+  html+='<div class="btnrow"><button class="btn ghost" type="button" id="reset">Desmarcar esta etapa</button></div>';
+  main.innerHTML='<section>'+html+'</section>';
+  main.querySelectorAll(".item .key").forEach(function(k){
+    k.addEventListener("click",function(){
+      var id=k.closest(".item").dataset.id;
+      if(state.checks[id]) delete state.checks[id]; else state.checks[id]=Date.now();
+      save();render();
+    });
+  });
+  document.getElementById("reset").addEventListener("click",function(){
+    if(confirm("Desmarcar todos os itens de \u201c"+p.title+"\u201d?")){phaseItems(p).forEach(function(id){delete state.checks[id];});save();render();}
+  });
+}
+
+function renderLog(p){
+  var html='<div class="phase-head"><h2>'+esc(p.title)+'</h2><span class="count">'+esc(p.sub)+'</span></div>'+
+    '<p class="intro">'+p.intro+'</p><div id="toast" class="toast" role="status" aria-live="polite"></div>';
+  QUICK.forEach(function(g,gi){
+    html+='<h3>'+esc(g.g)+'</h3><div class="quick">';
+    g.items.forEach(function(q,qi){html+='<button class="qbtn" type="button" data-g="'+gi+'" data-q="'+qi+'">'+esc(q[0])+'</button>';});
+    html+='</div>';
+  });
+  html+='<h3>Outra ocorrência</h3><div class="log-form"><textarea id="logtxt" placeholder="Escreva a ocorrência (opcional)"></textarea>'+
+    '<div class="btnrow"><button class="btn confirma" type="button" id="logadd">Registrar agora</button></div></div>';
+  var list=state.log.slice().sort(function(a,b){return a.t-b.t;});
+  var pend=list.filter(function(e){return e.h&&!e.d;}).length;
+  html+='<h3>Registros do dia ('+list.length+(pend?', '+pend+' a completar':'')+')</h3>';
+  if(list.length){
+    html+='<ul class="log">';
+    list.forEach(function(e){
+      html+='<li data-t="'+e.t+'"><span class="hr">'+hhmm(e.t)+'</span><span class="t">'+esc(e.x)+
+        (e.d?'<span class="det">'+esc(e.d)+'</span>':(e.h?'<span class="todo">Falta: '+esc(e.h)+'</span>':''))+
+        '<span class="edit" hidden><input type="text" value="'+esc(e.d||"")+'" placeholder="'+esc(e.h||"detalhes")+'"><button class="btn confirma sm" type="button">Salvar</button></span></span>'+
+        '<span class="acts"><button class="mini comp" type="button">Completar</button><button class="del" type="button" aria-label="Apagar registro">×</button></span></li>';
+    });
+    html+='</ul>';
+  } else html+='<p class="empty">Nenhum registro ainda. Toque em um botão acima no momento em que acontecer.</p>';
+  html+='<div class="btnrow"><button class="btn ghost" type="button" id="undo">Desfazer último</button><button class="btn ghost" type="button" id="logcopy">Copiar tudo para a Ata</button></div>';
+  main.innerHTML='<section>'+html+'</section>';
+
+  function add(x,h){var e={t:Date.now(),x:x};if(h)e.h=h;state.log.push(e);save();render();
+    var to=document.getElementById("toast");if(to){to.textContent="Registrado às "+hhmm(e.t)+": "+x;to.classList.add("on");setTimeout(function(){to.classList.remove("on");},2200);}}
+  main.querySelectorAll(".qbtn").forEach(function(b){
+    b.addEventListener("click",function(){var q=QUICK[+b.dataset.g].items[+b.dataset.q];add(q[1],q[2]);});
+  });
+  document.getElementById("logadd").addEventListener("click",function(){
+    var ta=document.getElementById("logtxt"),v=ta.value.trim();add(v||"Ocorrência (descrever)",v?"":"o que aconteceu");
+  });
+  document.getElementById("undo").addEventListener("click",function(){
+    if(!state.log.length)return;var last=state.log.reduce(function(m,e){return e.t>m.t?e:m;});
+    if(confirm("Desfazer o registro das "+hhmm(last.t)+"?\n"+last.x)){state.log=state.log.filter(function(e){return e!==last;});save();render();}
+  });
+  main.querySelectorAll(".log li").forEach(function(li){
+    var t=+li.dataset.t, e=state.log.filter(function(x){return x.t===t;})[0], ed=li.querySelector(".edit"), inp=ed.querySelector("input");
+    function commit(){e.d=inp.value.trim();save();render();}
+    li.querySelector(".comp").addEventListener("click",function(){ed.hidden=!ed.hidden;if(!ed.hidden)inp.focus();});
+    ed.querySelector("button").addEventListener("click",commit);
+    inp.addEventListener("keydown",function(ev){if(ev.key==="Enter")commit();});
+    li.querySelector(".del").addEventListener("click",function(){if(confirm("Apagar este registro?")){state.log=state.log.filter(function(x){return x.t!==t;});save();render();}});
+  });
+  document.getElementById("logcopy").addEventListener("click",function(){
+    var txt=list.map(function(e){return hhmm(e.t)+" "+e.x+(e.d?": "+e.d:"");}).join("\n");
+    if(!txt)return;var btn=this;
+    function ok(){btn.textContent="Copiado";setTimeout(function(){btn.textContent="Copiar tudo para a Ata";},1500);}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(ok,function(){fallback(txt);ok();});}else{fallback(txt);ok();}
+  });
+}
+function fallback(txt){var t=document.createElement("textarea");t.value=txt;document.body.appendChild(t);t.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(t);}
+
+function renderRef(p){
+  var html='<div class="phase-head"><h2>'+esc(p.title)+'</h2><span class="count">'+esc(p.sub)+'</span></div><p class="intro">'+p.intro+'</p>';
+  var list=p.refKey==="KEYS"?KEYS:REF;
+  list.forEach(function(r){html+='<details'+(r[2]?' open':'')+'><summary>'+esc(r[0])+'</summary><div class="dbody">'+r[1]+'</div></details>';});
+  main.innerHTML='<section>'+html+'</section>';
+}
+
+function renderAta(p){
+  var html='<div class="phase-head"><h2>'+esc(p.title)+'</h2><span class="count">'+esc(p.sub)+'</span></div><p class="intro">'+p.intro+'</p>';
+  ATA.forEach(function(g){
+    html+='<h3>'+esc(g.h)+'</h3><ul class="list">';
+    g.c.forEach(function(c){
+      html+='<li class="code'+(c[3]?' star':'')+'"><span class="cn">'+esc(c[0]==="s/c"?"sem código":c[0])+(c[3]?' \u2605':'')+'</span>'+
+        '<span class="cd">'+esc(c[1])+'</span><span class="ex">'+esc(c[2])+'</span></li>';
+    });
+    html+='</ul>';
+  });
+  html+='<p class="empty">Dica: na aba Durante, os atalhos já vêm com o código. No fim do dia, \u201cCopiar tudo\u201d e passar a limpo.</p>';
+  main.innerHTML='<section>'+html+'</section>';
+}
+
+function render(){
+  renderTabs();
+  var p=PHASES.filter(function(x){return x.id===state.tab;})[0]||PHASES[0];
+  if(p.groups)renderChecklist(p); else if(p.log)renderLog(p); else if(p.ata)renderAta(p); else renderRef(p);
+}
+render();
+})();
+</script>
+<script>
+if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){});});}
+</script>
+</body>
+</html>
